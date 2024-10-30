@@ -1,0 +1,8 @@
+name = "budget-tool"
+compatibility_date = "2024-01-01"
+main = "functions/index.js"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "budget-tool-db"
+database_id = "f835746c-c89f-4953-8aa6-c42e452d6317"
