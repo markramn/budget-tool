@@ -6,3 +6,6 @@ main = "functions/index.js"
 binding = "DB"
 database_name = "budget-tool-db"
 database_id = "f835746c-c89f-4953-8aa6-c42e452d6317"
+
+[triggers]
+crons = ["* * * * *"]  # Run every minute

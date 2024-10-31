@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
       const { token, user: userData } = await response.json();
       localStorage.setItem('authToken', token);
       setUser(userData);
-      navigate('/dashboard');
+      navigate('/home');
       return true;
     } catch (error) {
       console.error('Login error:', error);

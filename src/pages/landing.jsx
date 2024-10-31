@@ -14,7 +14,7 @@ export default function Landing() {
   const [error, setError] = useState('');
 
   if (user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   const handleSubmit = async (e) => {

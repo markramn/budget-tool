@@ -37,13 +37,20 @@ export async function createSession(env, userId) {
   return { token, expiresAt };
 }
 
-export async function validateSession(env, request) {
-  const authHeader = request.headers.get('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) {
-    return null;
+export async function validateSession(env, requestOrToken) {
+  let token;
+  
+  // Check if we received a request object or direct token
+  if (typeof requestOrToken === 'string') {
+    token = requestOrToken;
+  } else {
+    const authHeader = requestOrToken.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return null;
+    }
+    token = authHeader.split(' ')[1];
   }
 
-  const token = authHeader.split(' ')[1];
   const session = await env.DB.prepare(
     'SELECT user_id FROM sessions WHERE token = ? AND expires_at > datetime("now")'
   ).bind(token).first();
@@ -54,7 +61,6 @@ export async function validateSession(env, request) {
     'SELECT id, email, name FROM users WHERE id = ?'
   ).bind(session.user_id).first();
 
-  // Return just the id for database operations
   return user ? { id: user.id } : null;
 }
 
@@ -147,8 +153,8 @@ export async function handleValidateSession(env, request) {
     });
   }
 
-  const token = authHeader.split(' ')[1];
-  const user = await validateSession(env, token);
+  // Pass the full request object to validateSession
+  const user = await validateSession(env, request);
 
   if (!user) {
     return new Response(JSON.stringify({ error: 'Invalid session' }), {

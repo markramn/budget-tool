@@ -35,7 +35,27 @@ CREATE TABLE categories (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Create transactions table
+CREATE TABLE recurring_transaction_templates (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    category_id INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT,
+    amount DECIMAL(10,2) NOT NULL,
+    type TEXT NOT NULL CHECK (type IN ('income', 'expense')),
+    start_date DATETIME NOT NULL,
+    recurrence_pattern TEXT NOT NULL CHECK (recurrence_pattern IN ('weekly', 'monthly', 'yearly')),
+    last_generated_date DATETIME NOT NULL,
+    end_date DATETIME,
+    is_active BOOLEAN DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_recurring_templates_user_id ON recurring_transaction_templates(user_id);
+CREATE INDEX idx_recurring_templates_last_generated ON recurring_transaction_templates(last_generated_date);
+
 CREATE TABLE transactions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
@@ -45,13 +65,11 @@ CREATE TABLE transactions (
     amount DECIMAL(10,2) NOT NULL,
     type TEXT NOT NULL CHECK (type IN ('income', 'expense')),
     date DATETIME NOT NULL,
-    is_recurring BOOLEAN DEFAULT 0,
-    recurrence_pattern TEXT,
-    recurrence_end_date DATETIME,
-    parent_transaction_id INTEGER REFERENCES transactions(id),
+    recurring_template_id INTEGER,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE,
+    FOREIGN KEY (recurring_template_id) REFERENCES recurring_transaction_templates(id) ON DELETE SET NULL
 );
 
 -- Create trigger for updating user timestamp
