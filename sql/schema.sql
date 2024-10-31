@@ -1,3 +1,5 @@
+-- sql/schema.sql
+
 -- Drop existing tables
 DROP TABLE IF EXISTS transactions;
 DROP TABLE IF EXISTS categories;

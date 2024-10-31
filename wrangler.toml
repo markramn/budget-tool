@@ -1,11 +1,26 @@
 name = "budget-tool"
 compatibility_date = "2024-01-01"
-main = "functions/index.js"
+main = "./functions/index.js"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "budget-tool-db"
-database_id = "f835746c-c89f-4953-8aa6-c42e452d6317"
+database_name = "budget-tool"
+database_id = "0e32ea8f-c8bc-43b1-b153-72771925b356"
+
+[site]
+bucket = "./dist"
+
+[build]
+command = "npm run build"
+watch_dir = "src"
 
 [triggers]
-crons = ["* * * * *"]  # Run every minute
+crons = ["* * * * *"]
+
+[env.production]
+vars = { ENVIRONMENT = "production" }
+
+# Add these for Pages deployment
+[build.upload]
+format = "service-worker"
+
